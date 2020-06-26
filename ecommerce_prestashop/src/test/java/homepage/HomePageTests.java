@@ -78,7 +78,7 @@ public class HomePageTests extends BaseTests {
 	ModalProdutoPage modalProdutoPage;
 
 	@Test
-	public void incluirProdutoNoCarrinho_ProdutoIncluidoComSucesso() {
+	public void testIncluirProdutoNoCarrinho_ProdutoIncluidoComSucesso() {
 
 		String tamanhoProduto = "L";
 		String corProduto = "Black";
@@ -97,14 +97,14 @@ public class HomePageTests extends BaseTests {
 		List<String> listaOpcoes = produtoPage.obterOpcoesSelecionadas();
 
 		System.out.println(listaOpcoes.get(0));
-		System.out.println("Tamanho da lista:" + listaOpcoes.size());
+		System.out.println("Tamanho da lista: " + listaOpcoes.size());
 
 		produtoPage.selecionarOpcaoDropDown(tamanhoProduto);
 
 		listaOpcoes = produtoPage.obterOpcoesSelecionadas();
 
 		System.out.println(listaOpcoes.get(0));
-		System.out.println("Tamanho da lista:" + listaOpcoes.size());
+		System.out.println("Tamanho da lista: " + listaOpcoes.size());
 
 		// Selecionar cor
 		produtoPage.selecionarCorPreta();
@@ -163,10 +163,10 @@ public class HomePageTests extends BaseTests {
 	CarrinhoPage carrinhoPage;
 
 	@Test
-	public void IrParaCarrinho_InformacoesPersistidas() {
+	public void testIrParaCarrinho_InformacoesPersistidas() {
 		// -Pré-condições
 		// Produto incluído na tela ModalProdutopage
-		incluirProdutoNoCarrinho_ProdutoIncluidoComSucesso();
+		testIncluirProdutoNoCarrinho_ProdutoIncluidoComSucesso();
 
 		carrinhoPage = modalProdutoPage.clicarBotaoProceedToCheckout();
 
@@ -242,11 +242,11 @@ public class HomePageTests extends BaseTests {
 	CheckoutPage checkoutPage;
 
 	@Test
-	public void IrParaCheckout_FreteMeioPagamentoEnderecoListadosOk() {
+	public void testIrParaCheckout_FreteMeioPagamentoEnderecoListadosOk() {
 		//pré-condições
 		
 		//Produto disponível no carrinho e compras
-		 IrParaCarrinho_InformacoesPersistidas();
+		 testIrParaCarrinho_InformacoesPersistidas();
 		 //teste
 		 
 		 //Clicar no botão
@@ -262,7 +262,7 @@ public class HomePageTests extends BaseTests {
 	     checkoutPage.clicarBotaoContinueAddress();
 	     
 	     String encontrado_shippingValor = checkoutPage.obter_shippingValor();
-	     encontrado_shippingValor = Funcoes.removeTexto(encontrado_shippingValor, "tax excl.");
+	     encontrado_shippingValor = Funcoes.removeTexto(encontrado_shippingValor, " tax excl.");
 	     Double encontrado_shippingValor_Double = Funcoes.removeCifraoDevolveDouble(encontrado_shippingValor);
 	     
 	     assertThat(encontrado_shippingValor_Double, is(esperado_shippingTotal) );
@@ -287,18 +287,29 @@ public class HomePageTests extends BaseTests {
 	}
 	
 	@Test
-	public void finalizarPedido_pedidoFinalizadoComSucesso() {
+	public void testFinalizarPedido_pedidoFinalizadoComSucesso() {
 		//pré-condição
 		//Checkout completamente concluido
-		IrParaCheckout_FreteMeioPagamentoEnderecoListadosOk();
+		testIrParaCheckout_FreteMeioPagamentoEnderecoListadosOk();
 		
 		//teste
 		//Clicar no botao para confirmar o pedido
 		PedidoPage pedidoPage = checkoutPage.clicarBotaoConfirmaPedido();
 		//Validar valores da tela
 		assertTrue(pedidoPage.obter_textoPedidoConfirmado().endsWith("YOUR ORDER IS CONFIRMED"));
-		
 		//assertThat(pedidoPage.obter_textoPedidoConfirmado().toUpperCase(), is("YOUR ORDER IS CONFIRMED"));
+		
+		assertThat(pedidoPage.obter_email(), is("marceloo@teste.com"));
+		
+		assertThat(pedidoPage.obter_totalProdutos(), is(esperado_subtotalProduto));
+				
+		assertThat(pedidoPage.obter_totalTaxIncl(), is(esperado_totalTaxIncTotal));
+
+		assertThat(pedidoPage.obter_metodoPagamento(), is("check"));
+		
+		//assertThat(quantidadeAtual, either(is(2)).or(is(4)).or(is(6)).or(is(8)));
+								
+
 	}
 
 }
